@@ -1,47 +1,69 @@
-# Proyecto Base Implementando Clean Architecture
+# 🧱 Proyecto con Scaffold Clean Architecture Gradle Plugin
 
-## Antes de Iniciar
+Este proyecto implementa una arquitectura limpia basada en el plugin Scaffold Clean Architecture para Gradle, e integra servicios como Redis, PostgreSQL y AWS Localstack para pruebas locales.
 
-Empezaremos por explicar los diferentes componentes del proyectos y partiremos de los componentes externos, continuando con los componentes core de negocio (dominio) y por último el inicio y configuración de la aplicación.
+## 🧰 Requisitos Previos
 
-Lee el artículo [Clean Architecture — Aislando los detalles](https://medium.com/bancolombia-tech/clean-architecture-aislando-los-detalles-4f9530f35d7a)
+- Docker y Docker Compose
+- AWS CLI configurado
+- Java 17+
+- Gradle
+- Localstack CLI (opcional)
 
-# Arquitectura
+---
 
-![Clean Architecture](https://miro.medium.com/max/1400/1*ZdlHz8B0-qu9Y-QO3AXR_w.png)
+## 🚀 Levantar Infraestructura Local
 
-## Domain
+Para levantar los servicios de Redis, PostgreSQL y Localstack, navega a la carpeta `localstack` y ejecuta:
 
-Es el módulo más interno de la arquitectura, pertenece a la capa del dominio y encapsula la lógica y reglas del negocio mediante modelos y entidades del dominio.
+```bash
+docker-compose up -d
+```
 
-## Usecases
+---
 
-Este módulo gradle perteneciente a la capa del dominio, implementa los casos de uso del sistema, define lógica de aplicación y reacciona a las invocaciones desde el módulo de entry points, orquestando los flujos hacia el módulo de entities.
+## 📬 Crear Cola en SQS (Localstack)
 
-## Infrastructure
+Asegúrate de tener configurado el CLI de AWS apuntando a Localstack, y luego ejecuta el siguiente comando para crear una cola de SQS:
 
-### Helpers
+```bash
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name usuarios-creados
+```
 
-En el apartado de helpers tendremos utilidades generales para los Driven Adapters y Entry Points.
+---
 
-Estas utilidades no están arraigadas a objetos concretos, se realiza el uso de generics para modelar comportamientos
-genéricos de los diferentes objetos de persistencia que puedan existir, este tipo de implementaciones se realizan
-basadas en el patrón de diseño [Unit of Work y Repository](https://medium.com/@krzychukosobudzki/repository-design-pattern-bc490b256006)
+## 🧾 Crear Tabla en DynamoDB (Localstack)
 
-Estas clases no puede existir solas y debe heredarse su compartimiento en los **Driven Adapters**
+Para crear la tabla `UsersTable` en DynamoDB, usa el siguiente comando:
 
-### Driven Adapters
+```bash
+aws --endpoint-url=http://localhost:4566 dynamodb create-table \
+  --table-name UsersTable \
+  --attribute-definitions AttributeName=id,AttributeType=N \
+  --key-schema AttributeName=id,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST
+```
 
-Los driven adapter representan implementaciones externas a nuestro sistema, como lo son conexiones a servicios rest,
-soap, bases de datos, lectura de archivos planos, y en concreto cualquier origen y fuente de datos con la que debamos
-interactuar.
+---
 
-### Entry Points
 
-Los entry points representan los puntos de entrada de la aplicación o el inicio de los flujos de negocio.
+## 🛠️ Herramientas y Tecnologías
 
-## Application
+- Spring Boot
+- Java 17
+- DynamoDB (Localstack)
+- Redis (Docker)
+- PostgreSQL (Docker)
+- AWS SQS (Localstack)
+- Scaffold Gradle Plugin
 
-Este módulo es el más externo de la arquitectura, es el encargado de ensamblar los distintos módulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma automática, inyectando en éstos instancias concretas de las dependencias declaradas. Además inicia la aplicación (es el único módulo del proyecto donde encontraremos la función “public static void main(String[] args)”.
+---
 
-**Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+## 🧪 Pruebas Locales
+
+Puedes utilizar [Localstack](https://docs.localstack.cloud/) para emular los servicios de AWS de forma local. La conexión a servicios como SQS o DynamoDB debe apuntar al endpoint:
+
+```
+http://localhost:4566
+```
+
