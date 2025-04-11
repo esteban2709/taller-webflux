@@ -1,0 +1,64 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: "taller-nequi"
+  devtools:
+    restart:
+      exclude: co/nequi/dynamodb/entity/
+  h2:
+    console:
+      enabled: true
+      path: "/h2"
+  profiles:
+    include: null
+    active: local
+  r2dbc:
+    url: "r2dbc:postgresql://localhost:5432/postgres?currentSchema=public"
+    username: "admin"
+    password: 123
+    properties:
+      schema: "public"
+  data:
+    redis:
+      host: "localhost"
+      port: 6379
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
+adapter:
+  restconsumer:
+    timeout: 5000
+  sqs:
+    region: "us-east-1"
+    queueUrl: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/usuarios-creados"
+    endpoint: "http://localhost:4566"
+adapters:
+  r2dbc:
+    host: "localhost"
+    port: 5432
+    database: "postgres"
+    schema: "public"
+    username: "admin"
+    password: 123
+entrypoint:
+  sqs:
+    region: "us-east-1"
+    endpoint: "http://localhost:4566"
+    queueUrl: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/usuarios-creados"
+    waitTimeSeconds: 20
+    maxNumberOfMessages: 10
+    visibilityTimeoutSeconds: 10
+    numberOfThreads: 1
+aws:
+  region: us-east-1
+  dynamodb:
+    endpoint: "http://localhost:4566"
