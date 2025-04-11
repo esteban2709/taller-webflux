@@ -1,11 +1,9 @@
 package co.nequi.consumer;
 
 import co.nequi.consumer.dto.response.ResponseDto;
-import co.nequi.consumer.dto.response.UserResponseDto;
 import co.nequi.consumer.mapper.IUserResponseMapper;
 import co.nequi.model.user.User;
 import co.nequi.model.user.gateways.IUserClientGateway;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -49,7 +47,7 @@ public class UserRestConsumer implements IUserClientGateway {
 // Possible fallback method
 //    public Mono<String> testGetOk(Exception ignored) {
 //        return client
-//                .get() // TODO: change for another endpoint or destination
+//                .get() //
 //                .retrieve()
 //                .bodyToMono(String.class);
 //    }

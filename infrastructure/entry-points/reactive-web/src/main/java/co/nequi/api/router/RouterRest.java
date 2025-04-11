@@ -11,7 +11,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class RouterRest {
 
-    private static final String USERS_PATH = "/user";
+    private static final String USERS_PATH = "/users";
 
     @Bean
     public RouterFunction<ServerResponse> routerFunction(UserHandler userHandler) {

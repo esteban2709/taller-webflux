@@ -41,7 +41,6 @@ public class UserUseCase {
                                                     return queueGateway.sendMessage(userSaved)
                                                             .then(Mono.just(userSaved));
                                                 })
-                                                // Consulta después de guardar
                                 )
                 );
     }

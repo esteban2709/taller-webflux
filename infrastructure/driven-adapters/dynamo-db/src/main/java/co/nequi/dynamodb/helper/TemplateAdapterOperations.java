@@ -90,8 +90,7 @@ public abstract class TemplateAdapterOperations<E, K, V> {
     }
 
     protected V toEntity(E model) {
-        V entity = mapper2.convertValue(model, dataClass);
-        return entity;
+        return mapper2.convertValue(model, dataClass);
     }
 
     protected E toModel(V data) {

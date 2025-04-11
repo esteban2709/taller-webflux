@@ -9,3 +9,20 @@ services:
     volumes:
       - ./localstack:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
+  redis-cache:
+    image: redis
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    restart: always
+  postgres-container:
+    image: postgres
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    restart: always
+

@@ -28,7 +28,7 @@ public class SQSSender implements IQueueGateway {
         try {
             json = objectMapper.writeValueAsString(user);
         } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         String finalJson = json;
         return Mono.fromCallable(() -> buildRequest(finalJson))

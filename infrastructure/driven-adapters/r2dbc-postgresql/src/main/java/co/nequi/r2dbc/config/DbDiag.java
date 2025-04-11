@@ -1,9 +1,7 @@
 package co.nequi.r2dbc.config;
 
-import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +12,8 @@ import java.util.Map;
 @Configuration
 public class DbDiag {
 
-    @Autowired
-    private ConnectionFactory connectionFactory; // Cambiado de ConnectionPool a ConnectionFactory
-
     @Bean
-    public CommandLineRunner checkDatabaseConnection() {
+    public CommandLineRunner checkDatabaseConnection(ConnectionFactory connectionFactory) {
         return args -> {
             System.out.println("Verificando conexión a la base de datos...");
 

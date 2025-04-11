@@ -2,7 +2,6 @@ package co.nequi.r2dbc.adapter;
 
 import co.nequi.model.user.User;
 import co.nequi.model.user.gateways.IUserRepositoryGateway;
-import co.nequi.r2dbc.entity.UserEntity;
 import co.nequi.r2dbc.mapper.IUserEntityMapper;
 import co.nequi.r2dbc.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;

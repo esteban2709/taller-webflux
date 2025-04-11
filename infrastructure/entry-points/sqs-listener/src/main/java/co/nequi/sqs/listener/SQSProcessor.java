@@ -15,42 +15,21 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class SQSProcessor implements Function<Message, Mono<Void>> {
-    // private final MyUseCase myUseCase;
     private final MessageUseCase messageUseCase;
     private final ObjectMapper objectMapper;
 
     @Override
     public Mono<Void> apply(Message message) {
-        try {
-            User user = objectMapper.readValue(message.body(), User.class);
-            user.setFirstName(user.getFirstName().toUpperCase());
-            user.setLastName(user.getLastName().toUpperCase());
-            user.setEmail(user.getEmail().toUpperCase());
-            messageUseCase.saveMessage(user);
-        }catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        System.out.println("Listener cola" +  message.body());
-
-        return Mono.empty();
-        // return myUseCase.doAny(message.body());
+        return Mono.fromCallable(() -> objectMapper.readValue(message.body(), User.class))
+                .map(user -> {
+                    user.setFirstName(user.getFirstName().toUpperCase());
+                    user.setLastName(user.getLastName().toUpperCase());
+                    user.setEmail(user.getEmail().toUpperCase());
+                    return user;
+                })
+                .flatMap(user -> messageUseCase.saveMessage(user))
+                .onErrorResume(e -> Mono.empty())
+                .then();
     }
 
-//    @Override
-//    public Mono<Void> apply(Message message) {
-//        return Mono.fromCallable(() -> objectMapper.readValue(message.body(), User.class))
-//                .map(user -> {
-//                    user.setFirstName(user.getFirstName().toUpperCase());
-//                    user.setLastName(user.getLastName().toUpperCase());
-//                    user.setEmail(user.getEmail().toUpperCase());
-//                    return user;
-//                })
-//                .flatMap(user -> {
-//                    System.out.println("Listener cola: " + message.body());
-//                    return messageUseCase.saveMessage(user); // Este debe retornar Mono<Void>
-//                })
-////                .doOnError(e -> log.error("Error processing message: {}", e.getMessage(), e))
-////                .onErrorResume(e -> Mono.empty())
-//                ;
-//    }
 }
