@@ -14,9 +14,9 @@ spring:
     include: null
     active: local
   r2dbc:
-    url: "r2dbc:postgresql://localhost:5432/postgres?currentSchema=public"
-    username: "admin"
-    password: 123
+    url: ${URL_DB:r2dbc:postgresql://localhost:5432/postgres?currentSchema=public}
+    username: ${USER_DB:admin}
+    password: ${PASSWORD_DB:123}
     properties:
       schema: "public"
   data:
@@ -39,21 +39,21 @@ adapter:
     timeout: 5000
   sqs:
     region: "us-east-1"
-    queueUrl: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/usuarios-creados"
-    endpoint: "http://localhost:4566"
+    queueUrl: ${URL_SQS:http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/usuarios-creados}
+    endpoint: ${URL_ENDPOINT:http://localhost:4566}
 adapters:
   r2dbc:
     host: "localhost"
     port: 5432
     database: "postgres"
     schema: "public"
-    username: "admin"
-    password: 123
+    username: ${USER_DB:admin}
+    password: ${PASSWORD_DB:123}
 entrypoint:
   sqs:
     region: "us-east-1"
-    endpoint: "http://localhost:4566"
-    queueUrl: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/usuarios-creados"
+    endpoint: ${URL_ENDPOINT:http://localhost:4566}
+    queueUrl: ${URL_SQS:http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/usuarios-creados}
     waitTimeSeconds: 20
     maxNumberOfMessages: 10
     visibilityTimeoutSeconds: 10
@@ -61,4 +61,4 @@ entrypoint:
 aws:
   region: us-east-1
   dynamodb:
-    endpoint: "http://localhost:4566"
+    endpoint: ${URL_ENDPOINT:http://localhost:4566}
