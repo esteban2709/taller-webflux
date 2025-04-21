@@ -21,15 +21,19 @@ public class SQSProcessor implements Function<Message, Mono<Void>> {
     @Override
     public Mono<Void> apply(Message message) {
         return Mono.fromCallable(() -> objectMapper.readValue(message.body(), User.class))
-                .map(user -> {
-                    user.setFirstName(user.getFirstName().toUpperCase());
-                    user.setLastName(user.getLastName().toUpperCase());
-                    user.setEmail(user.getEmail().toUpperCase());
-                    return user;
-                })
-                .flatMap(user -> messageUseCase.saveMessage(user))
+                .map(this::toUpperCase)
+                .flatMap(messageUseCase::saveMessage)
+                .doOnSuccess(ignored -> System.out.println("Mensaje procesado: " + message.body()))
+                .doOnError(e -> System.err.println("Error procesando mensaje: " + e.getMessage()))
                 .onErrorResume(e -> Mono.empty())
-                .then();
+                .then(); // Asegura que se retorne Mono<Void>
+    }
+
+    private User toUpperCase(User user) {
+        user.setFirstName(user.getFirstName().toUpperCase());
+        user.setLastName(user.getLastName().toUpperCase());
+        user.setEmail(user.getEmail().toUpperCase());
+        return user;
     }
 
 }

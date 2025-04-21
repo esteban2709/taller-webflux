@@ -1,5 +1,8 @@
 package co.nequi.consumer;
 
+import co.nequi.api.exeptionhandler.BusinessException;
+import co.nequi.api.exeptionhandler.ExceptionMessage;
+import co.nequi.api.exeptionhandler.TechnicalException;
 import co.nequi.consumer.dto.response.ResponseDto;
 import co.nequi.consumer.mapper.IUserResponseMapper;
 import co.nequi.model.user.User;
@@ -17,51 +20,26 @@ public class UserRestConsumer implements IUserClientGateway {
     private final WebClient client;
     private final IUserResponseMapper userResponseMapper;
 
+    private static final String SERVER_ERROR = "Error del servidor: ";
+    private static final String CLIENT_ERROR = "Error de cliente: ";
+    private static final String USER_NOT_FOUND = "Usuario no encontrado";
+
     @Override
     public Mono<User> getUserById(Long id) {
-        return client.get().
-                uri("/" + id)
+        return client.get()
+                .uri("/" + id)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> {
                     if (response.statusCode() == HttpStatus.NOT_FOUND) {
-                        return Mono.error(new RuntimeException("User with id " + id + " not found"));
+                        return Mono.error(new BusinessException(USER_NOT_FOUND, ExceptionMessage.USER_NOT_FOUND));
                     }
-                    return Mono.error(new RuntimeException("Client error: " + response.statusCode()));
+                    return Mono.error(new BusinessException(CLIENT_ERROR + response.statusCode(), ExceptionMessage.CLIENT_ERROR));
                 })
+                .onStatus(HttpStatusCode::is5xxServerError, response ->
+                        Mono.error(new TechnicalException(SERVER_ERROR + response.statusCode(), ExceptionMessage.EXTERNAL_SERVICE_ERROR))
+                )
                 .bodyToMono(ResponseDto.class)
                 .log()
-                .map(  res -> userResponseMapper.toModel(res.getData()));
+                .map(res -> userResponseMapper.toModel(res.getData()));
     }
-
-
-    // these methods are an example that illustrates the implementation of WebClient.
-    // You should use the methods that you implement from the Gateway from the domain.
-//    @CircuitBreaker(name = "testGet" /*, fallbackMethod = "testGetOk"*/)
-//    public Mono<ObjectResponse> testGet() {
-//        return client
-//                .get()
-//                .retrieve()
-//                .bodyToMono(ObjectResponse.class);
-//    }
-
-// Possible fallback method
-//    public Mono<String> testGetOk(Exception ignored) {
-//        return client
-//                .get() //
-//                .retrieve()
-//                .bodyToMono(String.class);
-//    }
-
-//    @CircuitBreaker(name = "testPost")
-//    public Mono<ObjectResponse> testPost() {
-//        ObjectRequest request = ObjectRequest.builder()
-//            .val1("exampleval1")
-//            .val2("exampleval2")
-//            .build();
-//        return client
-//                .post()
-//                .body(Mono.just(request), ObjectRequest.class)
-//                .retrieve()
-//                .bodyToMono(ObjectResponse.class);
-//    }
 }

@@ -1,13 +1,16 @@
 package co.nequi.api.exeptionhandler;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 public class ErrorResponse {
-    private int status;
-    private String title;
-    private String detail;
-    private String timestamp;
+    private String message;
+    private String code;
+
+    public ErrorResponse(String message, String code) {
+        this.message = message;
+        this.code = code;
+    }
 }

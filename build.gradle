@@ -6,6 +6,10 @@ buildscript {
 		jacocoVersion = '0.8.13'
 		pitestVersion = '1.15.0'
         lombokVersion = '1.18.38'
+        modelModule = 'model'
+        useCaseModule = 'usecase'
+        logbackVersion = '1.5.11'
+        logstashLogbackVersion = '7.4'
 	}
 }
 

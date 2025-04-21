@@ -42,6 +42,14 @@ subprojects {
         testCompileOnly  "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+
+        if (!project.name.equalsIgnoreCase(modelModule) && !project.name.equalsIgnoreCase(useCaseModule)) {
+            dependencies.add("implementation", "org.slf4j:slf4j-api:2.0.9")
+            dependencies.add("implementation", "ch.qos.logback:logback-core:${logbackVersion}")
+            dependencies.add("implementation", "ch.qos.logback:logback-classic:${logbackVersion}")
+            dependencies.add("implementation", "net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
+            dependencies.add("implementation", "org.codehaus.janino:janino:3.1.11")
+        }
     }
 
     tasks.withType(Test).configureEach {
@@ -131,3 +139,4 @@ pitestReportAggregate {
 tasks.named('wrapper') {
     gradleVersion = '8.13'
 }
+
